@@ -1,0 +1,41 @@
+#mapContainer{
+    z-index: 1000;
+}
+
+
+#controls{
+    position: absolute;
+    z-index: 100000;
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    align-items: center;
+    pointer-events: none;
+    background-color: rgba(128, 128, 128, 0.475);
+    border-radius: 5px;
+    padding: 5px;
+      pointer-events: auto;
+}
+
+#colorControl ul {
+    display: flex;
+    flex-direction: row;
+    z-index: 1000;
+
+}
+
+#colorControl ul li{
+    list-style: none;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin: 3px;
+    padding:2px;
+}
+
+#colorControl ul li:hover {
+    cursor: pointer;
+}
+
+.selected{
+    border: 5px dashed black;
+}
