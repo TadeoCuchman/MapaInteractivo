@@ -1,0 +1,29 @@
+CREATE DATABASE MapaJaulas;
+
+CREATE TABLE users(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	name VARCHAR (50) NOT NULL,
+	mail VARCHAR (255) NOT NULL,
+	birth_date DATE NOT NULL,
+	country VARCHAR (30),
+	password VARCHAR (255) NOT NULL,
+	rol VARCHAR (30) NOT NULL
+);
+
+CREATE TABLE zones(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	latlangs VARCHAR (255) NOT NULL,
+    color VARCHAR (30) NOT NULL,
+	date DATE NOT NULL,
+	user_id BIGINT NOT NULL REFERENCES users(id),
+
+);									
+
+CREATE TABLE Point(
+	id BIGSERIAL NOT NULL PRIMARY KEY,
+	latlang VARCHAR (255) NOT NULL,
+	date DATE NOT NULL,
+	user_id BIGINT NOT NULL REFERENCES users(id),
+
+);									
+
