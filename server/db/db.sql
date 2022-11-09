@@ -21,23 +21,26 @@ CREATE TABLE workspaces (
 	description VARCHAR (300)
 );
 
+
 CREATE TABLE zones(
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	latlangs VARCHAR (255) NOT NULL,
     color VARCHAR (30) NOT NULL,
 	date DATE NOT NULL,
+	text VARCHAR (300),
 	workspace_id BIGINT NOT NULL REFERENCES workspaces(id)	
 
 );									
 
 
-CREATE TABLE Point (
+CREATE TABLE Point(
 	id BIGSERIAL NOT NULL PRIMARY KEY,
 	latlang VARCHAR (255) NOT NULL,
 	date DATE NOT NULL,
+    color VARCHAR (30) NOT NULL,
+	text VARCHAR (300),
 	workspace_id BIGINT NOT NULL REFERENCES workspaces(id)
-	
-);		
 
+);
 
 

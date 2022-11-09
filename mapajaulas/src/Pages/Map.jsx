@@ -1,7 +1,14 @@
 import * as React from "react";
 import { useState } from "react";
 
-import { MapContainer, TileLayer, Popup, Marker, Circle } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  Polyline,
+  Polygon,
+  Circle,
+  Tooltip,
+} from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import { useMapEvents } from "react-leaflet/hooks";
 
@@ -10,10 +17,14 @@ import "leaflet/dist/leaflet.css";
 
 export const Map = () => {
   const navigate = useNavigate();
+
   const [state, setState] = useState({
-    currentLocation: { lat: -34.90648499618397, lng: -56.1904071648873 },
+    currentLocation: { lat: -34.90737286434041, lng: -56.192724108695984 },
     zoom: "22",
   });
+  const [lines, setLines] = useState([]);
+  const [polygones, setPolygones] = useState([]);
+  const [circles, setCircles] = useState([]);
 
   const [zoneBool, setZoneBool] = useState(false);
   const [zone, setZone] = useState([]);
@@ -32,29 +43,35 @@ export const Map = () => {
           navigate("/NewWorkSpace", { state: { latlang: event.latlng } });
         }
         if (
-          event.containerPoint.x > 370 ||
+          event.containerPoint.x > 550 ||
           event.containerPoint.x < 0 ||
           event.containerPoint.y > 60 ||
           event.containerPoint.y < 0
         ) {
           setZone([...zone, event.latlng]);
           if (markerTextSumbit) {
-            const circle = L.circle(zone[0], { radius: 5 }).addTo(map);
-            if (markerTextInput) {
-              circle.bindTooltip(markerTextInput).openTooltip();
-              setMarkerTextInput("");
-              //post del punto
-            }
-            document.getElementById("mapContainer").click();
+            const newCircle = {
+              latlang: zone[0],
+              color: color,
+              text: markerTextInput,
+            };
+            setCircles([...circles, newCircle]);
+            //post del circulo
             setMarkerTextSumbit(false);
             setMarkerTextPopup(false);
             setZone([]);
           }
           if (zoneBool) {
-            L.polyline(zone, { color: color }).addTo(map);
+            setLines([...lines, { latlangs: zone, color: color }]);
             if (createPolygon) {
-              L.polygon(zone, { color: color }).addTo(map);
+              const newPolygon = {
+                latlangs: zone,
+                color: color,
+                text: markerTextInput,
+              };
+              setPolygones([...polygones, newPolygon]);
               //post del poligono
+              setMarkerTextPopup(false);
               setZoneBool(false);
               setCreatePolygon(false);
             }
@@ -80,11 +97,10 @@ export const Map = () => {
                 `
           )
           .openOn(map);
-        console.log(document.getElementById("markZone"));
+
         document
           .getElementById("markZone")
           .addEventListener("click", (event) => {
-            console.log(event);
             setZoneBool(true);
             setMarkerTextSumbit(false);
           });
@@ -118,7 +134,10 @@ export const Map = () => {
         minZoom={2}
         style={{ position: "relative" }}
       >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <MyComponent />
         <div id="controls">
+          {/* menu del Marco */}
           {zoneBool ? (
             <>
               <button
@@ -141,19 +160,18 @@ export const Map = () => {
               >
                 Terminar Marco
               </button>
+              <NotesControls setMarkerTextInput={setMarkerTextInput} />
               <ColorControls setColor={setColor} color={color} />
             </>
           ) : (
             ""
           )}
+
+          {/* menu de punto  */}
           {markerTextPopup ? (
             <>
-              <span>Nota</span>
-              <input
-                type="text"
-                id="markerTextPopup"
-                onChange={(event) => setMarkerTextInput(event.target.value)}
-              ></input>
+              <NotesControls setMarkerTextInput={setMarkerTextInput} />
+              <ColorControls setColor={setColor} color={color} />
               <button
                 onClick={() => {
                   setMarkerTextPopup(false);
@@ -178,8 +196,39 @@ export const Map = () => {
             ""
           )}
         </div>
-        <MyComponent />
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+
+        {/* Renderers de diferentes utilidades  */}
+        {circles.map((circle) => {
+          return (
+            <Circle
+              center={circle.latlang}
+              pathOptions={{ color: circle.color }}
+              radius={5}
+            >
+              {circle.text ? <Tooltip>{circle.text}</Tooltip> : ""}
+            </Circle>
+          );
+        })}
+
+        {polygones.map((polygon) => {
+          return (
+            <Polygon
+              positions={polygon.latlangs}
+              pathOptions={{ color: polygon.color }}
+            >
+              {polygon.text ? <Tooltip>{polygon.text}</Tooltip> : ""}
+            </Polygon>
+          );
+        })}
+
+        {lines.map((line) => {
+          return (
+            <Polyline
+              positions={line.latlangs}
+              pathOptions={{ color: line.color }}
+            ></Polyline>
+          );
+        })}
       </MapContainer>
     </div>
   );
@@ -194,8 +243,11 @@ const ColorControls = ({ setColor, color }) => {
         {colors.map((col) => {
           return (
             <li
-              className="selected"
-              style={{ backgroundColor: `${col}` }}
+              style={
+                col == color
+                  ? { backgroundColor: `${col}`, border: "1px dashed white" }
+                  : { backgroundColor: `${col}` }
+              }
               key={col}
               onClick={() => setColor(col)}
             >
@@ -205,5 +257,18 @@ const ColorControls = ({ setColor, color }) => {
         })}
       </ul>
     </div>
+  );
+};
+
+const NotesControls = ({ setMarkerTextInput }) => {
+  return (
+    <>
+      <span>Nota</span>
+      <input
+        type="text"
+        id="markerTextPopup"
+        onChange={(event) => setMarkerTextInput(event.target.value)}
+      ></input>
+    </>
   );
 };
