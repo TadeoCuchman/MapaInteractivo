@@ -21,8 +21,8 @@ router.post("/register", async (req, res) => {
       req.body.name &&
       req.body.country &&
       req.body.birth_date &&
-        req.body.password &&
-        req.body.rol
+      req.body.password &&
+      req.body.rol
     ) {
       const user = await pool.query("SELECT * FROM users WHERE mail = $1;", [
         req.body.mail,
@@ -51,7 +51,7 @@ router.post("/register", async (req, res) => {
           req.body.name,
           req.body.mail,
           req.body.birth_date,
-            req.body.country,
+          req.body.country,
           req.body.rol,
           password,
         ]
@@ -88,6 +88,7 @@ router.post("/login", async (req, res) => {
       req.body.mail,
     ]);
     const array = user.rows;
+
 
     if (user.rowCount <= 0) {
       return res.status(400).json({ error: "User not found" });
