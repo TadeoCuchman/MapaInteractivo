@@ -12,10 +12,10 @@ export const Nav = ({ setToken }) => {
           <Link to={"/Inicio"}>Inicio</Link>
         </li>
         <li>
-          <Link to={"/map"}>Mapa</Link>
+          <Link to={"/Map"}>Mapa</Link>
         </li>
         <li>
-          <Link to={"/workspaces"}>Agregar espacio de trabajo</Link>
+          <Link to={"/Workspaces"}>Espacios de trabajo</Link>
         </li>
         <li>
           <button
