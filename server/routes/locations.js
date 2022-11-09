@@ -8,9 +8,10 @@ const pool = require("../db/index");
 
 router.get('/workspaces', verifyToken, async (req, res) => {
 	try{
-		const array = await pool.query('SELECT * FROM workspaces WHERE private = false AND created_by = $1 ORDER BY created_date DESC', [req.user.id])
+		const array = await pool.query('SELECT * FROM workspaces')
+		const result = array.rows
 		if(array.rowCount > 0){
-			return res.json({ success: true, message:'Espacio de trabajo:', workspace}).status(200)
+			return res.json({ success: true, message:'Espacio de trabajo:',result}).status(200)
 		} else {
 			return res.json({ success: false, message:'No se encontraron espacios de trabajo'}).status(400)
 		}
@@ -18,7 +19,7 @@ router.get('/workspaces', verifyToken, async (req, res) => {
 	}catch (err) {
 		return res.json({
 			success: false,
-			message: "Error with database registering a workspace" + JSON.stringify(err)
+			message: "Error with database showing workspaces" + JSON.stringify(err)
 		}).status(400)
 	}
 })

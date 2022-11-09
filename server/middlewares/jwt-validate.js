@@ -14,7 +14,7 @@ const verifyToken = (req, res, next) => {
     req.user = verified
     next(); // continuamos
   } catch (error) {
-    res.status(400).json({succes:false, error: 'El Token no es válido', message:'Need to Login in order to post.'})
+    res.status(400).json({succes:false, error: 'El Token no es válido'})
   }
 }
 
