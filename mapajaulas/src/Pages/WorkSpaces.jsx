@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 import "./WorkSpaces.css";
 
@@ -36,9 +37,16 @@ export const WorkSpaces = () => {
 
 const WorkSpace = ({ name, latlang }) => {
   return (
-    <div id="space">
-      {name} - {latlang}
-      <div id="minimap"></div>
-    </div>
+    <Link
+      to="/Map"
+      state={{
+        latlang,
+      }}
+    >
+      <div id="space">
+        {name} - {latlang}
+        <div id="minimap"></div>
+      </div>
+    </Link>
   );
 };

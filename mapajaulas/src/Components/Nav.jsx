@@ -18,6 +18,9 @@ export const Nav = ({ setToken }) => {
           <Link to={"/Workspaces"}>Espacios de trabajo</Link>
         </li>
         <li>
+          <Link to={""}>Graficas</Link>
+        </li>
+        <li>
           <button
             onClick={() => {
               localStorage.removeItem("token");

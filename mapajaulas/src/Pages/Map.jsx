@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   MapContainer,
@@ -9,7 +9,7 @@ import {
   Circle,
   Tooltip,
 } from "react-leaflet";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useMapEvents } from "react-leaflet/hooks";
 
 import "./Map.css";
@@ -17,12 +17,14 @@ import "leaflet/dist/leaflet.css";
 
 export const Map = () => {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  console.log(location.state);
   const [state, setState] = useState({
     currentLocation: { lat: -34.90737286434041, lng: -56.192724108695984 },
     zoom: "22",
   });
   const [lines, setLines] = useState([]);
+  const [line, setLine] = useState({});
   const [polygones, setPolygones] = useState([]);
   const [circles, setCircles] = useState([]);
 
@@ -34,6 +36,10 @@ export const Map = () => {
   const [markerTextSumbit, setMarkerTextSumbit] = useState(false);
   const [markerTextInput, setMarkerTextInput] = useState("");
   const [newWorkSpace, setNewWorkSpace] = useState(false);
+
+  useEffect(() => {
+    setLines([...lines, { latlangs: zone, color: color }]);
+  },[line])
 
   function MyComponent() {
     const map = useMapEvents({
@@ -59,22 +65,24 @@ export const Map = () => {
             //post del circulo
             setMarkerTextSumbit(false);
             setMarkerTextPopup(false);
+            setMarkerTextInput("");
             setZone([]);
           }
           if (zoneBool) {
-            setLines([...lines, { latlangs: zone, color: color }]);
-            if (createPolygon) {
-              const newPolygon = {
-                latlangs: zone,
-                color: color,
-                text: markerTextInput,
-              };
-              setPolygones([...polygones, newPolygon]);
-              //post del poligono
-              setMarkerTextPopup(false);
-              setZoneBool(false);
-              setCreatePolygon(false);
-            }
+            setLine({ latlangs: zone, color: color });
+          }
+          if (createPolygon) {
+            const newPolygon = {
+              latlangs: zone,
+              color: color,
+              text: markerTextInput,
+            };
+            setPolygones([...polygones, newPolygon]);
+            //post del poligono
+            setMarkerTextPopup(false);
+            setMarkerTextInput("");
+            setZoneBool(false);
+            setCreatePolygon(false);
           }
         }
       },
@@ -151,7 +159,9 @@ export const Map = () => {
               </button>
               <button
                 onClick={() => {
+                  setZoneBool(false);
                   setCreatePolygon(true);
+
                   setTimeout(
                     () => document.getElementById("mapContainer").click(),
                     500
@@ -198,34 +208,38 @@ export const Map = () => {
         </div>
 
         {/* Renderers de diferentes utilidades  */}
-        {circles.map((circle) => {
+        {circles.map((circle, i) => {
           return (
             <Circle
               center={circle.latlang}
               pathOptions={{ color: circle.color }}
-              radius={5}
+              radius={2}
+              key={i}
             >
               {circle.text ? <Tooltip>{circle.text}</Tooltip> : ""}
             </Circle>
           );
         })}
 
-        {polygones.map((polygon) => {
+        {polygones.map((polygon,i) => {
           return (
             <Polygon
               positions={polygon.latlangs}
               pathOptions={{ color: polygon.color }}
+              key={i}
             >
               {polygon.text ? <Tooltip>{polygon.text}</Tooltip> : ""}
             </Polygon>
           );
         })}
 
-        {lines.map((line) => {
+        {lines.map((line,i) => {
           return (
             <Polyline
               positions={line.latlangs}
               pathOptions={{ color: line.color }}
+              key={i}
+
             ></Polyline>
           );
         })}
